@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
-        UserDaoHibernateImpl impl = new UserDaoHibernateImpl();
+        UserDaoJDBCImpl impl = new UserDaoJDBCImpl();
         impl.createUsersTable();
         impl.saveUser("Валерия", "Яровцева", (byte) 24);
         impl.saveUser("Алексей", "Федоров", (byte) 31);
@@ -19,7 +19,10 @@ public class Main {
         impl.getAllUsers();
         impl.cleanUsersTable();
         impl.dropUsersTable();
-
-        Util.getSessionFactory().close();
+        try {
+            Util.connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

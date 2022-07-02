@@ -11,24 +11,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
+    private Statement statement;
     public UserDaoJDBCImpl() {
-
+        try {
+            statement = Util.connection.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void createUsersTable() {
-        try(Statement statement = Util.connection.createStatement()) {
+        try {
             statement.execute("CREATE TABLE IF NOT EXISTS user(" +
                     "id BIGINT PRIMARY KEY AUTO_INCREMENT," +
                     "name VARCHAR(25)," +
                     "lastName VARCHAR(25)," +
                     "age TINYINT(3))");
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public void dropUsersTable() {
-        try(Statement statement = Util.connection.createStatement()) {
+        try {
             statement.execute("DROP TABLE IF EXISTS user");
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -62,7 +67,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        try(Statement statement = Util.connection.createStatement()) {
+        try {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM user");
             while (resultSet.next()) {
                 long id = resultSet.getInt("id");
@@ -81,10 +86,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        try(Statement statement = Util.connection.createStatement()) {
-            statement.execute(
-                    "DELETE FROM user"
-            );
+        try {
+            statement.execute("DELETE FROM user");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
